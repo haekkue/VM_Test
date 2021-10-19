@@ -1,0 +1,264 @@
+<%@ page import="kr.co.envision.fw.Config" %>
+<%@ page import="kr.co.envision.fw.UserList" %>
+<%@ page import="kr.co.envision.fw.UserMap" %>
+<%
+public class CS
+{
+	/*
+	아래 코드는 bean 객체를 통해 입력받은 외부 입력값이 검증없이 SQL 쿼리문에 사용되는 형태입니다.
+	*/
+	static Connection currentCon = null;
+	static ResultSet rs = null;
+
+	public static LoginBean bad1(LoginBean bean)
+	{
+		Statement stmt = null;
+		String username = bean.getUsername();  	// bean 형태로 계정 입력받음
+		String password = bean.getPassword();	// bean 형태로 암호 입력받음
+
+		String searchQuery = "select * from users where uname='" + username + "' AND password='" + password + "'";
+
+		try
+		{
+			currentCon = ConnectionManager.getConnection();
+			stmt=currentCon.createStatement();
+
+			// 보안약점 : bean 외부 입력값이 검증없이 쿼리문에 사용
+			rs = stmt.executeQuery(searchQuery);
+			boolean userExists = rs.next();
+			//...
+		}
+		//...
+	}
+}
+%>
+<html>
+<head>
+<title>::: 위험관리 시스템 :::</title>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<link rel="STYLESHEET" type="text/css" href="<%= conf.getString("CSS_ROOT") %>/style.css">
+<script language="JavaScript" src="<%= conf.getString("JS_ROOT") %>/menu.js"></script>
+<script language='javascript' src='<%= conf.getString("JS_ROOT") %>/common.js'></script>
+<script language='javascript' >
+
+  function goPage(page){
+    self.location.href = "<%= LIST_URL %>&iPage=" + page;
+  }
+  
+  function checkall() {
+  
+    for(i = 0; i < document.retForm.length;i++) {
+    
+      if(document.all.all_check.checked) {
+      
+        document.retForm.elements[i].checked=true;
+      }
+       else{
+       
+        document.retForm.elements[i].checked=false;
+      }
+    }
+  }
+  
+  function goSubmit(){
+  
+    var frm = document.searchForm;
+    frm.action = 'asset_division_popup.jsp';
+    frm.submit();
+  }
+  
+  function retValue(i, row){
+    var frm = document.all
+    var b;
+    var chk = frm.chk;
+    
+    if( chk.length == null){
+      b = opener.addApproval( chk.value, chk.getAttribute("USER_NM"), chk.getAttribute("DEPT_NM"), chk.getAttribute("FULL_NAME"), row);
+    }else{
+      b = opener.addApproval( chk[i].value, chk[i].getAttribute("USER_NM"), chk[i].getAttribute("DEPT_NM"), chk[i].getAttribute("FULL_NAME"), row);
+    }
+    
+    self.close();
+  }
+  
+  function searchCall(){
+    
+    var frm = document.searchForm;
+    frm.method = 'get';
+    frm.action = 'sucu_opinion_popup.jsp';
+    frm.submit();
+  } 
+  
+  function resetCall(){
+    var frm = document.searchForm;
+    if (frm.s_dept.value != ''){
+       frm.s_dept.value = '';
+    }
+    if (frm.s_userNm.value != ''){
+       frm.s_userNm.value = '';
+    }
+  }
+</script>
+<body leftmargin="0" topmargin="0">
+<!------------------ TopTable(title) ***Width=100%*** Begin ----------------->
+<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
+  <tr> 
+    <td width="41" rowspan="2"><img src="<%= conf.getString("IMG_ROOT") %>/common/popup_t01.gif" width="41" height="71"></td>
+    <td height="43" bgcolor="#349DBB">
+      <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="td_wb">정보보호관리시스템</td>
+          <td width="48"><img src="<%= conf.getString("IMG_ROOT") %>/common/popup_t02.gif"></td>
+        </tr>
+      </table>
+    </td>
+    <td width="123" rowspan="2"><img src="<%= conf.getString("IMG_ROOT") %>/common/popup_img2.gif"></td>
+  </tr>
+  <tr> 
+    <td><img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="100%" height="28"></td>
+  </tr>
+</table>
+<!------------------- TopTable(title) ***Width=100%*** End ------------------>
+<!------------------- ContentsTable ***Width=100%*** Begin ------------------>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
+  <tr> 
+    <td width="18" background="<%= conf.getString("IMG_ROOT") %>/common/popup_bg01.gif"><img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="18" height="100%"></td>
+    <td>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+        <!-------------- TableView01 Begin -------------->
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="12"><img src="<%= conf.getString("IMG_ROOT") %>/common/b01.gif"></td>
+                      <td class="t_title01">결재선추가</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td>
+                        <form name="searchForm" method="get" action="">
+                        <input type="hidden" name="row" value="<%=row %>" >
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td>
+                              <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C7E5E5">
+                                <tr>
+                                  <td><img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="100%" height="2"></td>
+                                </tr>
+                              </table>
+                              <table width="100%" border="0" cellpadding="1" cellspacing="1" bgcolor="#C7E5E5">
+                                <tr>
+                                  <td width="15%" class="tb_center">부서</td>
+                                  <td colspan="3" class="tgray_left"><input name=s_dept type="text" class="text01" id="s_dept" size="25"></td>
+                                </tr>
+                                <tr>
+                                  <td width="15%" class="tb_center">이름</td>
+                                  <td colspan="3" class="tgray_left"><input name="s_userNm" type="text" class="text01" id="s_userNm" size="25"></td>
+                                </tr> 
+                              </table>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td height="27" align="right" valign="bottom">
+                            <a href="javascript:searchCall()"><img src="<%= conf.getString("IMG_ROOT") %>/common/btn_search.gif"></a>
+                            <a href="javascript:resetCall()" ><img src="<%= conf.getString("IMG_ROOT") %>/common/btn_reset.gif" border="0"></a>
+                            </td>
+                          </tr>
+                        </table>        
+                        </form>     
+
+                        <form name="retForm" >              
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td>
+                              <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C7E5E5">
+                                <tr>
+                                  <td><img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="100%" height="2"></td>
+                                </tr>
+                              </table>
+                              <table width="100%" border="0" cellpadding="1" cellspacing="1" bgcolor="#C7E5E5">
+                                <tr>
+                                  <td width="7%" class="tb_center">번호</td>
+                                  <td width="15%" class="tb_center">사용자ID</td>
+                                  <td width="15%" class="tb_center">이름</td>
+                                  <td width="25%" class="tb_center">부서</td>
+                                  <td width="25%" class="tb_center">직급</td>
+                                  <td width="13%" class="tb_center">선택</td>
+                                </tr>   
+        <%
+          String chk = null;
+          for( int i=0; i<list.size(); i++){
+            map = list.getMap(i);
+              chk = "<input type='hidden' name='chk' value='" + map.getString("USER_ID") + "'" +
+                  " USER_NM ='" + map.getString("USER_NM") + "'" +
+                  " DEPT_NM ='" + map.getString("DEPT_NM") + "'" +
+                  " FULL_NAME ='" + map.getString("FULL_NAME") + "' >";
+        %>  
+                                <tr>
+                                  <%= chk %>
+                                  <td class="t_center"><%= totalRow - i %></td>
+                                  <td class="t_left"><%= map.getString("USER_ID") %></td>
+                                  <td class="t_left"><%= map.getString("USER_NM") %></td>
+                                  <td class="t_left"><%= map.getString("DEPT_NM") %></td>
+                                  <td class="t_left"><%= map.getString("FULL_NAME") %></td>
+                                  <td class="t_center"><a href="javascript:retValue('<%=i%>', '<%=row %>' )";><img src='<%= conf.getString("IMG_ROOT") %>/common/btn_select.gif'></a></td>
+                                </tr> 
+        <%  }
+          if( list.size() == 0 ) {
+            out.println("<tr><td colspan='11' height='30' class='t_center'><b>등록된 데이타가 없습니다.</b></td></tr>");
+          }
+        %>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="40" align="right">
+                              <jsp:include page="/include/paging.jsp" flush="true">
+                                <jsp:param name="iTotalCount" value="<%= totalRow %>"/>
+                                <jsp:param name="iPage" value="<%= iPage %>" />
+                              </jsp:include>
+                            </td>
+                          </tr>
+                        </table>
+                        </form>     
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+        <!-------------- TableView01 End -------------->
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td><img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="100%" height="8"></td>
+          </tr>
+        </table>
+      </td> 
+      <td width="18" background="<%= conf.getString("IMG_ROOT") %>/common/popup_bg02.gif">
+        <img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="18" height="100%">
+      </td>
+    </tr>
+  </table>
+<!-------------------- ContentsTable ***Width=100%*** End ------------------->
+<!---------------------- Footer ***Width=100%*** Begin ---------------------->
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td bgcolor="#349DBB"><img src="<%= conf.getString("IMG_ROOT") %>/common/1pixel.gif" width="100%" height="12"></td>
+    </tr>
+  </table>
+<!----------------------- Footer ***Width=100%*** End -----------------------> 
+</body>
+</html>

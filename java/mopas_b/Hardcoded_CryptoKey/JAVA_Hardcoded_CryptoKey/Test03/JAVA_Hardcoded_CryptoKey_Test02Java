@@ -1,0 +1,63 @@
+package a;
+
+public class CS
+{
+
+    /*
+    암호화된 패스워드를 상수의 형태로 코드 내부에서 사용하는 것은 프로그램 소스가 노출되는 경우, 패스워드도 동시에 노출되는 보안약점을 가지게 됩니다.
+    */
+    private Connection conn;
+    
+    public String bad(String usr) 
+    {
+    	String seed = "68af404b513073584c4b6f22b6c63e6b";
+    
+    	try { 
+    		// 보안약점 : 상수로 정의된 암호화키를 이용하여 encrypt를 수행한다.
+    		SecretKeySpec skeySpec = new SecretKeySpec(seed.getBytes(), "AES");
+    		
+    		Data data = new Data();
+    		
+    		// 직접 가져오기
+    		SecretKeySpec skeySpec = new SecretKeySpec(data.key, "AES");
+    		
+    		//get 메서드로 가져오기
+    		
+    		SecretKeySpec skeySpec = new SecretKeySpec(data.getA(), "AES");
+    
+    		// 해당 암호화키 기반의 암호화 또는 복호화 업무 수행
+    		//...
+    	} 
+    	catch (SQLException e) { 
+    		// ...
+    	}
+    		
+    	return conn;
+    }
+    
+    /*
+    암호화 키를 환경설정파일에 저장하고 사용시에는 이 암호화키를 복호화하여 사용하여야 합니다.
+    */
+    public String good(String usr) 
+    {
+    	String seed = null;
+     
+    	try {
+    		// 수정 : 암호화 키를 외부환경에서 읽음.
+        		seed = getPassword("./password.ini");
+        		// 암호화된 암호화 키를 복호화함.
+        		seed = decrypt(seed);
+        		// 상수로 정의된 암호화키를 이용하여 encrypt를 수행한다.
+        		SecretKeySpec skeySpec = new SecretKeySpec(seed.getBytes(), "AES");
+    
+        		// 해당 암호화키 기반의 암호화 또는 복호화 업무 수행.
+    		//...
+      	} 
+    	catch (SQLException e) {
+          		// ...
+      	}
+     		
+    	return con;
+    }
+
+}
